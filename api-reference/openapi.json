@@ -13,7 +13,7 @@
   "paths": {
     "/auth/customer/token": {
       "post": {
-        "summary": "/auth/customer/token (Generate customer_token)",
+        "summary": "Generate customer_token",
         "parameters": [
           {
             "name": "X-Request-Id",
