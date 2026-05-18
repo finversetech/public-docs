@@ -390,7 +390,7 @@
         "tags": [
           "Auth (Customer App)"
         ],
-        "description": "Generate a new customer access_token (`customer_token`).\n\n**Authentication**: `client_id` and `client_secret`\n\n# Request parameters\n\n| **Parameter** | **Type** | **Description** |\n| --- | --- | --- |\n| client_id | string, required | API credentials. These are managed on Finverse developer dashboard ([dashboard.finverse.com](https://dashboard.finverse.com)) |\n| client_secret | string, required | API credentials |\n| grant_type | string ENUM, required | Accepted values: `grant_type` |\n\n# Response fields\n\n| **Field** | **Type** | **Description** |\n| --- | --- | --- |\n| access_token | string | **(SENSITIVE)** Customer access token (referred to as `customer_token`) |\n| expires_in | integer | Token validity length (in seconds) |\n| issued_at | string (ISO 8601 timestamp: date-time) | Token issue time |\n| token_type | string ENUM | Possible values: `Bearer` |\n\n## Token handling\n\n### Storage\n\n`customer_token` is highly sensitive since it is needed to conduct many Finverse API operations (including retrieving other sensitive tokens).\n\n**Best practices:**\n\n\\* Securely store the token in your back-end  \n\\* Never disclose this token externally (e.g. in your front-end).\n\n### Renewal\n\n`customer_token` expires after 1 hour.\n\nRepeat this request for token renewal.",
+        "description": "Generate a new customer access_token (`customer_token`).\n\n**Authentication**: `client_id` and `client_secret`\n\n## Token handling\n\n### Storage\n\n`customer_token` is highly sensitive since it is needed to conduct many Finverse API operations (including retrieving other sensitive tokens).\n\n**Best practices:**\n\n\\* Securely store the token in your back-end  \n\\* Never disclose this token externally (e.g. in your front-end).\n\n### Renewal\n\n`customer_token` expires after 1 hour.\n\nRepeat this request for token renewal.",
         "requestBody": {
           "content": {
             "application/json": {
@@ -457,19 +457,19 @@
                 "schema": {
                   "type": "integer"
                 },
-                "example": 1731039033
+                "example": 1731039139
               },
               "Date": {
                 "schema": {
                   "type": "string"
                 },
-                "example": "Fri, 08 Nov 2024 04:10:33 GMT"
+                "example": "Fri, 08 Nov 2024 04:12:19 GMT"
               },
               "Content-Length": {
                 "schema": {
                   "type": "integer"
                 },
-                "example": 930
+                "example": 1040
               },
               "Via": {
                 "schema": {
@@ -603,7 +603,7 @@
                 },
                 "example": {
                   "amount": 10000,
-                  "created_at": "2024-11-08T04:10:33.481Z",
+                  "created_at": "2024-11-08T04:12:19.103Z",
                   "currency": "HKD",
                   "link_customizations": {
                     "language": "en"
@@ -617,7 +617,7 @@
                     "description": "TEST Payment",
                     "external_transaction_reference": "INV12345"
                   },
-                  "payment_link_id": "01JC4ZEY49TPX2TQXXXTWB37AT",
+                  "payment_link_id": "01JC4ZJ58ZKXPVDSPDKCP27FKM",
                   "payment_metadata": {
                     "contract_id": "1234",
                     "key": "value",
@@ -630,15 +630,15 @@
                   },
                   "sender": {
                     "email": "info+test@finverse.com",
-                    "external_user_id": "user_id_1||1731039033",
+                    "external_user_id": "user_id_1||1731039139",
                     "name": "John Doe",
-                    "user_id": "01JC4ZEY4Q7TGG1MGAYQZC6P4B"
+                    "user_id": "01JC4ZJ5998NHNZ0CV6KNSYECF"
                   },
                   "session_status": "OPEN",
                   "status": "CREATED",
-                  "unique_reference_id": "Inv12345|1731039033",
-                  "updated_at": "2024-11-08T04:10:33.481Z",
-                  "url": "https://pay.prod.finverse.net/link/01JC4ZEY49TPX2TQXXXTWB37AT"
+                  "unique_reference_id": "Inv12345|1731039139",
+                  "updated_at": "2024-11-08T04:12:19.103Z",
+                  "url": "https://pay.prod.finverse.net/link/01JC4ZJ58ZKXPVDSPDKCP27FKM"
                 }
               }
             }
@@ -1026,29 +1026,7 @@
                 ],
                 "type": "object"
               },
-              "example": {
-                "amount": 100,
-                "currency": "HKD",
-                "link_customizations": {
-                  "countries": [],
-                  "institution_status": "",
-                  "language": "en",
-                  "link_mode": "",
-                  "redirect_uri": "",
-                  "ui_mode": ""
-                },
-                "mode": "PAYMENT",
-                "payment_details": {
-                  "description": "TEST Payment",
-                  "external_transaction_reference": "INV12345"
-                },
-                "sender": {
-                  "email": "info+test@finverse.com",
-                  "external_user_id": "user_id_1||{{$timestamp}}",
-                  "name": "John Doe"
-                },
-                "unique_reference_id": "Inv12345|{{$timestamp}}"
-              }
+              "example": "{\n  \"amount\": 100,\n  \"currency\": \"HKD\",\n  \"link_customizations\": {\n    \"countries\": [],\n    \"institution_status\": \"\",\n    \"language\": \"en\",\n    \"link_mode\": \"\",\n    \"redirect_uri\": \"\",\n    \"ui_mode\": \"\"\n  },\n  \"mode\": \"PAYMENT\",\n  \"payment_details\": {\n    \"description\": \"TEST Payment\",\n    \"external_transaction_reference\": \"INV12345\"\n  },\n  \"sender\": {\n    \"email\": \"info+test@finverse.com\",\n    \"external_user_id\": \"user_id_1||{{$timestamp}}\",\n    \"name\": \"John Doe\"\n  },\n  \"unique_reference_id\": \"Inv12345|{{$timestamp}}\"\n}"
             }
           }
         }
