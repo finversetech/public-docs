@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
+  "theme": "sequoia",
   "name": "Finverse Documentations",
   "colors": {
     "primary": "#009FFF",
@@ -29,10 +29,7 @@
       ]
     }
   },
-  "logo": {
-    "light": "/favicon.png",
-    "dark": "/favicon.png"
-  },
+  "logo": "/favicon.png",
   "navbar": {
     "primary": {
       "type": "button",
@@ -56,5 +53,8 @@
     "socials": {
       "github": "https://github.com/finversetech"
     }
+  },
+  "banner": {
+    "content": "Finverse API documentation"
   }
 }
