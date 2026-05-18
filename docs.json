@@ -30,8 +30,8 @@
     }
   },
   "logo": {
-    "light": "/logo.png",
-    "dark": "/logo.png"
+    "light": "/logo.svg",
+    "dark": "/logo.svg"
   },
   "navbar": {
     "primary": {
