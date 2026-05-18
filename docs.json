@@ -1,0 +1,59 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Finverse Documentations",
+  "colors": {
+    "primary": "#009FFF",
+    "light": "#67CFFF",
+    "dark": "#004E7D"
+  },
+  "favicon": "/favicon.png",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "API reference",
+        "groups": [
+          {
+            "group": "API documentation",
+            "openapi": "api-reference/openapi.json"
+          },
+          {
+            "group": "Endpoint examples",
+            "pages": []
+          }
+        ]
+      }
+    ],
+    "global": {
+      "anchors": [
+      ]
+    }
+  },
+  "logo": {
+    "light": "/favicon.png"
+  },
+  "navbar": {
+    "primary": {
+      "type": "button",
+      "label": "Dashboard",
+      "href": "https://dashboard.finverse.com"
+    }
+  },
+  "contextual": {
+    "options": [
+     "copy",
+     "view",
+     "chatgpt",
+     "claude",
+     "perplexity",
+     "mcp",
+     "cursor",
+     "vscode"
+   ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/finversetech"
+    }
+  }
+}

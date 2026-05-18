@@ -1,0 +1,1731 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "TEST - Payment Link",
+    "version": "1.0.0",
+    "description": ""
+  },
+  "servers": [
+    {
+      "url": "https://api.prod.finverse.net"
+    }
+  ],
+  "paths": {
+    "/auth/customer/token": {
+      "post": {
+        "summary": "/auth/customer/token (Generate customer_token)",
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "description": "String, optional. Customer-provided unique ID for the request (useful for debugging purposes)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{$timestamp}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "headers": {
+              "traceparent": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "00-038e9f876f292bf9d37eac35fb59d75a-51a6ee8515aa9dbe-01"
+              },
+              "vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "x-cloud-trace-context": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "038e9f876f292bf9d37eac35fb59d75a/5883652218567695806;o=1"
+              },
+              "x-request-id": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{unique_id}"
+              },
+              "date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Fri, 15 Jan 2021 05:19:56 GMT"
+              },
+              "content-length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1284
+              },
+              "x-envoy-upstream-service-time": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 221
+              },
+              "server": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "istio-envoy"
+              },
+              "x-envoy-decorator-operation": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "api.app.svc.cluster.local:8080/*"
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "clear"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "access_token": {
+                      "type": "string"
+                    },
+                    "expires_in": {
+                      "type": "integer"
+                    },
+                    "issued_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "token_type": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "access_token": "{customer_token}",
+                  "expires_in": 3600,
+                  "issued_at": "2022-08-01T01:01:00.000Z",
+                  "token_type": "Bearer"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error (invalid parameter)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{unique_id}"
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Wed, 21 Sep 2022 16:06:21 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 331
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 604,
+                  "error": {
+                    "code": "INVALID_PARAMETER",
+                    "details": "client_id in body should be at least 26 chars long",
+                    "error_code": "INVALID_PARAMETER",
+                    "message": "The parameters provided are invalid. See details.",
+                    "request_id": "{unique_id}",
+                    "type": "API_ERROR"
+                  },
+                  "message": "client_id in body should be at least 26 chars long"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Error (invalid credentials)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{unique_id}"
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Wed, 21 Sep 2022 16:08:44 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 182
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "integer"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "error": {
+                    "code": 40003,
+                    "error_code": "INVALID_CLIENT",
+                    "message": "Client authentication failed. Please verify client_id and client_secret inputs.",
+                    "request_id": "{unique_id}",
+                    "type": "API_ERROR"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Error (path not found)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "{unique_id}"
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Tue, 06 Sep 2022 15:08:05 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 257
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "code": {
+                          "type": "string"
+                        },
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "example": {
+                  "code": 404,
+                  "error": {
+                    "code": "PATH_NOT_FOUND",
+                    "details": "path /auth/customer/token2 was not found",
+                    "error_code": "PATH_NOT_FOUND",
+                    "message": "The provided path was not found",
+                    "request_id": "{unique_id}",
+                    "type": "API_ERROR"
+                  },
+                  "message": "path /auth/customer/token2 was not found"
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Auth (Customer App)"
+        ],
+        "description": "Generate a new customer access_token (`customer_token`).\n\n**Authentication**: `client_id` and `client_secret`\n\n# Request parameters\n\n| **Parameter** | **Type** | **Description** |\n| --- | --- | --- |\n| client_id | string, required | API credentials. These are managed on Finverse developer dashboard ([dashboard.finverse.com](https://dashboard.finverse.com)) |\n| client_secret | string, required | API credentials |\n| grant_type | string ENUM, required | Accepted values: `grant_type` |\n\n# Response fields\n\n| **Field** | **Type** | **Description** |\n| --- | --- | --- |\n| access_token | string | **(SENSITIVE)** Customer access token (referred to as `customer_token`) |\n| expires_in | integer | Token validity length (in seconds) |\n| issued_at | string (ISO 8601 timestamp: date-time) | Token issue time |\n| token_type | string ENUM | Possible values: `Bearer` |\n\n## Token handling\n\n### Storage\n\n`customer_token` is highly sensitive since it is needed to conduct many Finverse API operations (including retrieving other sensitive tokens).\n\n**Best practices:**\n\n\\* Securely store the token in your back-end  \n\\* Never disclose this token externally (e.g. in your front-end).\n\n### Renewal\n\n`customer_token` expires after 1 hour.\n\nRepeat this request for token renewal.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "client_id": {
+                    "maxLength": 26,
+                    "minLength": 26,
+                    "type": "string"
+                  },
+                  "client_secret": {
+                    "maxLength": 80,
+                    "minLength": 64,
+                    "type": "string"
+                  },
+                  "grant_type": {
+                    "description": "support only client_credentials",
+                    "maxLength": 100,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "client_id",
+                  "client_secret",
+                  "grant_type"
+                ],
+                "type": "object"
+              },
+              "example": {
+                "client_id": "{{client_id}}",
+                "client_secret": "{{client_secret}}",
+                "grant_type": "client_credentials"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment_links": {
+      "post": {
+        "summary": "Create Payment Link",
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "description": "String, optional. Customer-provided unique ID for the request (useful for debugging purposes)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{$timestamp}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success (payment mode, future payments disabled)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1731039033
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Fri, 08 Nov 2024 04:10:33 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 930
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "link_customizations": {
+                      "type": "object",
+                      "properties": {
+                        "language": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "tracking_flow": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "payment_details": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string"
+                        },
+                        "external_transaction_reference": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "payment_link_id": {
+                      "type": "string"
+                    },
+                    "payment_metadata": {
+                      "type": "object",
+                      "properties": {
+                        "contract_id": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        },
+                        "storeganise_invoice_ids": {
+                          "type": "string"
+                        },
+                        "user_address": {
+                          "type": "string"
+                        },
+                        "user_city": {
+                          "type": "string"
+                        },
+                        "user_country": {
+                          "type": "string"
+                        },
+                        "user_first_name": {
+                          "type": "string"
+                        },
+                        "user_last_name": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sender": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "external_user_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "user_id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "session_status": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "unique_reference_id": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "example": {
+                  "amount": 10000,
+                  "created_at": "2024-11-08T04:10:33.481Z",
+                  "currency": "HKD",
+                  "link_customizations": {
+                    "language": "en"
+                  },
+                  "metadata": {
+                    "key": "value",
+                    "tracking_flow": "webapp-checkout"
+                  },
+                  "mode": "PAYMENT",
+                  "payment_details": {
+                    "description": "TEST Payment",
+                    "external_transaction_reference": "INV12345"
+                  },
+                  "payment_link_id": "01JC4ZEY49TPX2TQXXXTWB37AT",
+                  "payment_metadata": {
+                    "contract_id": "1234",
+                    "key": "value",
+                    "storeganise_invoice_ids": "ABCD",
+                    "user_address": "1 Admiralty Drive",
+                    "user_city": "Hong Kong",
+                    "user_country": "HK",
+                    "user_first_name": "John",
+                    "user_last_name": "Doe"
+                  },
+                  "sender": {
+                    "email": "info+test@finverse.com",
+                    "external_user_id": "user_id_1||1731039033",
+                    "name": "John Doe",
+                    "user_id": "01JC4ZEY4Q7TGG1MGAYQZC6P4B"
+                  },
+                  "session_status": "OPEN",
+                  "status": "CREATED",
+                  "unique_reference_id": "Inv12345|1731039033",
+                  "updated_at": "2024-11-08T04:10:33.481Z",
+                  "url": "https://pay.prod.finverse.net/link/01JC4ZEY49TPX2TQXXXTWB37AT"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error (reused unique_reference_id with different request body)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1689652320
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Tue, 18 Jul 2023 03:51:59 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 218
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "error": {
+                    "details": "Trying to update existing paymentLink. Not supported.",
+                    "error_code": "INVALID_PARAMETER",
+                    "message": "The parameters provided are invalid. See details.",
+                    "request_id": "1689652320",
+                    "type": "API_ERROR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment API",
+          "Payment Links"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Create new Payment Link.\n\nTo avoid duplicate payments, you must provide a `unique_reference_id` which uniquely identifies the bill/invoice being paid. This allows you to safely create/retry Payment Links multiple times using the same `unique_reference_id`, for example if a user restarts the payment flow on a different device. Finverse will only allow a single payment per `unique_reference_id`. See \"Implementation guidance\" section below for additional details on how to generate a `unique_reference_id`.\n\n#### **Impact of** **`future_payments`** **on payment methods displayed**\n\nWhen enabling `future_payments`:\n\n- In `mode` = `SETUP`: the Finverse Link UI will only display payment methods which support recurring \"pull\" payments (e.g direct debit & cards).\n    \n- In `mode` = `PAYMENT`, the Finverse Link UI will continue to show all available payment methods, including one-time payment methods (in order to encourage payment completion).\n    \n    - The future payments setting will only apply if the user selects a payment method which supports recurring payments (e.g. direct debit or cards).\n        \n    - To enable future payments and display only recurring payment methods, use the (optional) `payment_method_types` filter to explicitly limit the payment methods displayed.\n        \n\n### autopay_enrollment_configurations **(object, optional)**\n\nConfigures the FInverse Link UI to enroll users into autopay (i.e. collects consent for future payments).\n\nThis controls whether the Finverse UI will prompt users to opt-in to autopay, when autopay is not already enforced (i.e. when `future_payments` ≠ `AUTOPAY`).\n\nWhen a user consents to autopay, the payment user property `autopay_consent` is set to `true`, which allows:\n\n- User can be charged for payments (using `POST /payments`) without obtaining additional user consent for each charge;\n    \n- Finverse can automatically initiate charges on bill/invoice due dates (for customer apps where Finverse ingests bill/invoices via ERP integrations or API).\n    \n\nNote: `autopay_enrollment_configurations` cannot be set when `future_payments` = `AUTOPAY` (since this already enforces autopay for all users; no autopay enrollment screen is shown).\n\n### receipient_account_filters (object, optional)\n\nOptional filter to narrow the list of accounts receiving money (also called \"settlement accounts\"). This is typically used for more complex payment scenarios, for example when a Customer App needs multiple settlement accounts:\n\n- For different business units, or\n    \n- With different collection fee rules (e.g. with or without transaction fee surcharges paid by senders)\n    \n\nIn these cases the Customer App can use `recipient_account_filters` to explicitly filter the receiving accounts matching its business requirements.\n\nNote: settlement accounts are configured by Finverse during initial onboarding of each Customer App. By default, Finverse creates 1 recipient account per payment method. Contact [support@finverse.com](https://mailto:support@finverse.com) if you have complex payment flows, use cases or business units which may benefit from setting up multiple settlement accounts.\n\n## Implementation guidance\n\n#### **Handling retries/revisit and avoiding duplicate payments: using** **`unique_reference_id as idempotency key`**\n\n- To enable retries/revisit, Finverse allows creating payment links using a previously-used `unique_reference_id`, if all payment link details are identical (amount, etc). This returns the same payment link ID and URL as originally created. This allows using `unique_reference_id` similarly to an idempotency key.\n    \n- To avoid duplicate payments, Finverse will only allow 1 executed payment per `unique_reference_id`.\n    \n- When a user revisits a payment link, the Finverse Link UI will show end-users a “Payment in progress” screen if a payment is already pending for the same `unique_reference_id`.\n    \n    - Example: if a user revisits a payment link after previously using the payment link to setup a direct debit mandate => the user will see \"Payment in progress\" if the direct debit mandate is still being processed; a payment will automatically be executed when the direct debit mandate becomes successful.\n        \n- `unique_reference_id` generation: we recommend generating `unique_reference_id` based on a composite/hash of the key payment details. The composite/hash should include any payment link details that could change between 2 user sessions, for example:\n    \n    - Bill/invoice/purchase reference (`external_transaction_reference`)\n        \n    - Payment `amount`\n        \n    - Sender details (`sender.name`, `sender.email`)\n        \n    - Metadata (`metadata`, `payment_metadata`).\n        \n    - This ensures that a new `unique_reference_id` is generated if any payment link details are modified (for example if the amount is updated or if the user changes their name/email between 2 user sessions).\n        \n- If a payment link creation request is sent using an existing `unique_reference_id` but different payment link details, the following API error will be returned:\n    \n\n``` json\n// HTTP 400 Bad Request\n{\n    \"error\": {\n        \"details\": \"Trying to update existing paymentLink. Not supported.\",\n        \"error_code\": \"INVALID_PARAMETER\",\n        \"message\": \"The parameters provided are invalid. See details.\",\n        \"request_id\": \"1689652320\",\n        \"type\": \"API_ERROR\"\n    }\n}\n\n ```",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "amount": {
+                    "description": "The amount of the payment. Expressed in currency's smallest unit or “minor unit”, as defined in ISO 4217.",
+                    "example": 100,
+                    "minimum": 1,
+                    "type": "integer"
+                  },
+                  "currency": {
+                    "example": "HKD",
+                    "maxLength": 3,
+                    "minLength": 3,
+                    "type": "string"
+                  },
+                  "integration_metadata": {
+                    "properties": {
+                      "integration_id": {
+                        "enum": [
+                          "RAPIDSTOR"
+                        ],
+                        "type": "string"
+                      },
+                      "rapidstor_metadata": {
+                        "properties": {
+                          "account_token": {
+                            "minimum": 1,
+                            "type": "string"
+                          },
+                          "corp_code": {
+                            "type": "string"
+                          },
+                          "i_anniv_days": {
+                            "format": "int32",
+                            "maximum": 31,
+                            "minimum": 1,
+                            "type": "number"
+                          },
+                          "s_location_code": {
+                            "type": "string"
+                          },
+                          "tenant_id": {
+                            "type": "string"
+                          },
+                          "unit_type_id": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "corp_code",
+                          "s_location_code",
+                          "tenant_id",
+                          "account_token"
+                        ],
+                        "type": "object"
+                      }
+                    },
+                    "required": [
+                      "integration_id"
+                    ],
+                    "type": "object"
+                  },
+                  "link_customizations": {
+                    "properties": {
+                      "language": {
+                        "description": "ISO639-1 language code. Language to display when user open the link, default to English (en) if not specified",
+                        "enum": [
+                          "en",
+                          "vi",
+                          "zh",
+                          "ko"
+                        ],
+                        "example": "en",
+                        "type": "string"
+                      },
+                      "redirect_uri": {
+                        "description": "URI to redirect to. Only needed if ui_mode = redirect",
+                        "type": "string"
+                      },
+                      "ui_mode": {
+                        "description": "The UI mode link is intended to be used in - \"iframe\", \"auto_redirect\", \"redirect\" or \"standalone\"",
+                        "enum": [
+                          "iframe",
+                          "redirect",
+                          "auto_redirect",
+                          "standalone"
+                        ],
+                        "example": "redirect",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "metadata": {
+                    "additionalProperties": {
+                      "maxLength": 1000,
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "mode": {
+                    "description": "The payment link mode",
+                    "enum": [
+                      "PAYMENT",
+                      "SETUP"
+                    ],
+                    "example": "PAYMENT",
+                    "type": "string"
+                  },
+                  "payment_details": {
+                    "properties": {
+                      "description": {
+                        "maxLength": 100,
+                        "type": "string"
+                      },
+                      "external_transaction_reference": {
+                        "description": "For external invoice/transaction reference",
+                        "maxLength": 35,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "description",
+                      "external_transaction_reference"
+                    ],
+                    "type": "object"
+                  },
+                  "payment_metadata": {
+                    "additionalProperties": {
+                      "maxLength": 1000,
+                      "type": "string"
+                    },
+                    "type": "object"
+                  },
+                  "payment_setup_options": {
+                    "properties": {
+                      "autopay_enrollment_configuration": {
+                        "properties": {
+                          "display_enrollment_screen": {
+                            "description": "Indicate whether the autopay enrollment screen should be prompted to the end user",
+                            "type": "boolean"
+                          },
+                          "enrollment_prefill_value": {
+                            "description": "Indicate what value should be prefilled on the autopay enrollment screen. Required when display_enrollment_screen is true; optional when display_enrollment_screen is false.",
+                            "enum": [
+                              "YES",
+                              "NO"
+                            ],
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "display_enrollment_screen"
+                        ],
+                        "type": "object"
+                      },
+                      "future_payments": {
+                        "description": "The type of future_payments that customer want to use. Possible values: AUTOPAY or CLICK_TO_PAY",
+                        "enum": [
+                          "AUTOPAY",
+                          "CLICK_TO_PAY"
+                        ],
+                        "type": "string"
+                      },
+                      "mandate_details": {
+                        "properties": {
+                          "description": {
+                            "description": "End-user facing description of the mandate (used in notifications, and in payments if no description is provided)",
+                            "type": "string"
+                          },
+                          "end_date": {
+                            "description": "YYYY-MM-DD, must be later than the date of creation.",
+                            "format": "date",
+                            "type": "string",
+                            "x-nullable": true
+                          },
+                          "start_date": {
+                            "description": "YYYY-MM-DD, must be later than or the same as the date of creation. If unspecified, default to the date of creation.",
+                            "format": "date",
+                            "type": "string",
+                            "x-nullable": true
+                          },
+                          "transaction_limits": {
+                            "properties": {
+                              "max_period_amount": {
+                                "description": "Maximum amount of money that can be paid during the reference period (across any number of transactions). Expressed in currency's smallest unit or “minor unit”, as defined in ISO 4217.",
+                                "minimum": 1,
+                                "type": "integer"
+                              },
+                              "max_period_count": {
+                                "description": "Maximum number of transactions (of any amount) that can be executed during the reference period.",
+                                "minimum": 1,
+                                "type": "integer"
+                              },
+                              "max_transaction_amount": {
+                                "description": "The maximum amount of money that can be transferred in a single transaction under this mandate. Expressed in currency's smallest unit or “minor unit”, as defined in ISO 4217.",
+                                "minimum": 1,
+                                "type": "integer"
+                              },
+                              "period": {
+                                "description": "Reference calendar periods for the payment limits. Possible values (DAILY, WEEKLY, MONTHLY, QUARTERLY, YEARLY)",
+                                "enum": [
+                                  "DAILY",
+                                  "WEEKLY",
+                                  "MONTHLY",
+                                  "QUARTERLY",
+                                  "YEARLY"
+                                ],
+                                "type": "string",
+                                "x-nullable": true
+                              }
+                            },
+                            "required": [
+                              "max_transaction_amount"
+                            ],
+                            "type": "object"
+                          }
+                        },
+                        "type": "object"
+                      },
+                      "payment_method_types": {
+                        "items": {
+                          "enum": [
+                            "MANDATE",
+                            "SINGLE",
+                            "CARD",
+                            "MANUAL",
+                            "WALLET"
+                          ],
+                          "type": "string"
+                        },
+                        "type": "array",
+                        "x-omitempty": true
+                      },
+                      "recipient_account_filters": {
+                        "properties": {
+                          "business_unit": {
+                            "minLength": 1,
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "business_unit"
+                        ],
+                        "type": "object"
+                      },
+                      "recurring_payment_mode": {
+                        "description": "The recurring payment mode",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "sender": {
+                    "properties": {
+                      "email": {
+                        "format": "email",
+                        "type": "string"
+                      },
+                      "external_user_id": {
+                        "description": "Customer App's user ID, representing the end-user making the payment.",
+                        "minLength": 1,
+                        "type": "string"
+                      },
+                      "name": {
+                        "description": "Accountholder name of the sender's account",
+                        "example": "Chan Li Pak",
+                        "minLength": 1,
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "external_user_id",
+                      "name"
+                    ],
+                    "type": "object"
+                  },
+                  "unique_reference_id": {
+                    "description": "Unique reference id to identifying the payment to be collected.",
+                    "minLength": 1,
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "currency",
+                  "mode",
+                  "sender",
+                  "unique_reference_id"
+                ],
+                "type": "object"
+              },
+              "example": {
+                "amount": 100,
+                "currency": "HKD",
+                "link_customizations": {
+                  "countries": [],
+                  "institution_status": "",
+                  "language": "en",
+                  "link_mode": "",
+                  "redirect_uri": "",
+                  "ui_mode": ""
+                },
+                "mode": "PAYMENT",
+                "payment_details": {
+                  "description": "TEST Payment",
+                  "external_transaction_reference": "INV12345"
+                },
+                "sender": {
+                  "email": "info+test@finverse.com",
+                  "external_user_id": "user_id_1||{{$timestamp}}",
+                  "name": "John Doe"
+                },
+                "unique_reference_id": "Inv12345|{{$timestamp}}"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payment_links/{payment_link_id}": {
+      "get": {
+        "summary": "Get Payment Link",
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "description": "String, optional. Customer-provided unique ID for the request (useful for debugging purposes)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{$timestamp}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success (Link created)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1713754106
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Mon, 22 Apr 2024 02:48:26 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 769
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "link_customizations": {
+                      "type": "object",
+                      "properties": {
+                        "language": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "tracking_flow": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "payment_details": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string"
+                        },
+                        "external_transaction_reference": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "payment_link_id": {
+                      "type": "string"
+                    },
+                    "payment_metadata": {
+                      "type": "object",
+                      "properties": {
+                        "contract_id": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sender": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "external_user_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "user_id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "session_status": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "unique_reference_id": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "example": {
+                  "amount": 10000,
+                  "created_at": "2024-04-22T02:48:22.688Z",
+                  "currency": "HKD",
+                  "link_customizations": {
+                    "language": "en"
+                  },
+                  "metadata": {
+                    "key": "value",
+                    "tracking_flow": "webapp-checkout"
+                  },
+                  "mode": "PAYMENT",
+                  "payment_details": {
+                    "description": "TEST Payment",
+                    "external_transaction_reference": "INV12345"
+                  },
+                  "payment_link_id": "01HW1V8PX04GHM6Q8ZAR7DPRAT",
+                  "payment_metadata": {
+                    "contract_id": "1234",
+                    "key": "value"
+                  },
+                  "sender": {
+                    "email": "info+test@finverse.com",
+                    "external_user_id": "user_id_1||1713754102",
+                    "name": "John Doe",
+                    "user_id": "01HW1V8PXBYHY2T0N121R50Q5V"
+                  },
+                  "session_status": "OPEN",
+                  "status": "CREATED",
+                  "unique_reference_id": "Inv12345|1713754102",
+                  "updated_at": "2024-04-22T02:48:22.688Z",
+                  "url": "https://pay.prod.finverse.net/link/01HW1V8PX04GHM6Q8ZAR7DPRAT"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error (Payment Link ID not found)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1705910484
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Mon, 22 Jan 2024 08:01:23 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 229
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "error": {
+                    "details": "payment link not found",
+                    "error_code": "RESOURCE_NOT_FOUND",
+                    "message": "Resource cannot be found. Resource does not exist, has been deleted, or is not accessible.",
+                    "request_id": "1705910484",
+                    "type": "API_ERROR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment API",
+          "Payment Links"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Retrieve a Payment Link object (using a specific `payment_link_id`).\n\n### payment (object)\n\nLatest Payment object (if any) associated with the payment link.\n\nRefer to the Payment data model in `GET /payments/{payment_id}` for details on the Payment object.\n\nOnly returned if `mode` = `PAYMENT`, once a Payment has started processing or is executed/failed.\n\n### payment_method (object, optional)\n\nDetails on the payment method authorized by the end-user. Refer to the Payment Method data model in `GET /payment_users/{user_id}/payment_methods` for details on the Payment Method object.\n\nCurrently, only returned for payment methods that are stored. The following payment methods are not stored:\n\n(i) one-time payment methods (e.g. FPS);\n\n(ii) recurring payment methods authorized for only one-time use (e.g. cards/mandates where Future Payments are not enabled).\n\nFor one-time card payments (i.e. where cards are not stored), some card details are included in the Payments object, when available from the card processing gateway (see `payment_links.payments.payment_methods` or `payments.payment_methods`).\n\n### payment_setup_options (object)\n\nAdditional parameters recording how payment methods and future payments have been configured.\n\n| **Parameter** | **Type** | **Description** |\n| --- | --- | --- |\n| autopay_enrollment_configurations | object | See `POST /payment_links` for details. |\n| future_payments | string ENUM, optional | See `POST /payment_links` for details. |\n| mandate_details | object, optional | See `POST /payment_links` for details. |\n| payment_method_types | array of ENUMs, optional | See `POST /payment_links` for details. |\n| recipient_account_filters | object, optional | See `POST /payment_links` for details. |\n\n### sender (object)\n\nThe sender object includes a Payment User object for the sender of the payment. Refer to the Payment User data model in `GET /payment_users/{payment_user_id}` for details on the Payment User object.\n\nNote: Some Payment User metadata fields are omitted for clarity (e.g. `created_at`, `metadata`, `updated_at`)."
+      },
+      "parameters": [
+        {
+          "name": "payment_link_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{payment_link_id}}"
+        }
+      ]
+    },
+    "/payment_links/{payment_link_id}/cancel": {
+      "post": {
+        "summary": "Cancel Payment Link",
+        "parameters": [
+          {
+            "name": "X-Request-Id",
+            "in": "header",
+            "description": "String, optional. Customer-provided unique ID for the request (useful for debugging purposes)",
+            "schema": {
+              "type": "string"
+            },
+            "example": "{{$timestamp}}"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success (Link cancelled)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1723822333
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Fri, 16 Aug 2024 15:32:12 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 771
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "amount": {
+                      "type": "integer"
+                    },
+                    "created_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "link_customizations": {
+                      "type": "object",
+                      "properties": {
+                        "language": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string"
+                        },
+                        "tracking_flow": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "mode": {
+                      "type": "string"
+                    },
+                    "payment_details": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string"
+                        },
+                        "external_transaction_reference": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "payment_link_id": {
+                      "type": "string"
+                    },
+                    "payment_metadata": {
+                      "type": "object",
+                      "properties": {
+                        "contract_id": {
+                          "type": "string"
+                        },
+                        "key": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "sender": {
+                      "type": "object",
+                      "properties": {
+                        "email": {
+                          "type": "string",
+                          "format": "email"
+                        },
+                        "external_user_id": {
+                          "type": "string"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "user_id": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "session_status": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string"
+                    },
+                    "unique_reference_id": {
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri"
+                    }
+                  }
+                },
+                "example": {
+                  "amount": 10000,
+                  "created_at": "2024-08-16T15:32:09.814Z",
+                  "currency": "HKD",
+                  "link_customizations": {
+                    "language": "en"
+                  },
+                  "metadata": {
+                    "key": "value",
+                    "tracking_flow": "webapp-checkout"
+                  },
+                  "mode": "PAYMENT",
+                  "payment_details": {
+                    "description": "TEST Payment",
+                    "external_transaction_reference": "INV12345"
+                  },
+                  "payment_link_id": "01J5DX2KYPS8E35HRTPVM545B1",
+                  "payment_metadata": {
+                    "contract_id": "1234",
+                    "key": "value"
+                  },
+                  "sender": {
+                    "email": "info+test@finverse.com",
+                    "external_user_id": "user_id_1||1723822330",
+                    "name": "John Doe",
+                    "user_id": "01J5DX2KZ39YTKMDHGFTAVT2XR"
+                  },
+                  "session_status": "OPEN",
+                  "status": "CANCELLED",
+                  "unique_reference_id": "Inv12345|1723822330",
+                  "updated_at": "2024-08-16T15:32:12.980Z",
+                  "url": "https://pay.prod.finverse.net/link/01J5DX2KYPS8E35HRTPVM545B1"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Error (Link not cancellable)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1709288382
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Fri, 01 Mar 2024 10:19:42 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 192
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "error": {
+                    "details": "Payment link cannot be cancelled (status: IN_PROGRESS)",
+                    "error_code": "NOT_CANCELLABLE",
+                    "message": "Cancellation not allowed",
+                    "request_id": "1709288382",
+                    "type": "API_ERROR"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Error (Link not cancellable: Setup mode already successful)",
+            "headers": {
+              "Vary": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Origin"
+              },
+              "X-Request-Id": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 1713755415
+              },
+              "Date": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "Mon, 22 Apr 2024 03:10:14 GMT"
+              },
+              "Content-Length": {
+                "schema": {
+                  "type": "integer"
+                },
+                "example": 218
+              },
+              "Via": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "1.1 google"
+              },
+              "Alt-Svc": {
+                "schema": {
+                  "type": "string"
+                },
+                "example": "h3=\":443\"; ma=2592000,h3-29=\":443\"; ma=2592000"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "details": {
+                          "type": "string"
+                        },
+                        "error_code": {
+                          "type": "string"
+                        },
+                        "message": {
+                          "type": "string"
+                        },
+                        "request_id": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "example": {
+                  "error": {
+                    "details": "",
+                    "error_code": "INTERNAL_SERVER_ERROR",
+                    "message": "We encountered an internal error. Please contact Finverse customer support for further assistance.",
+                    "request_id": "1713755415",
+                    "type": "API_ERROR"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment API",
+          "Payment Links"
+        ],
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ],
+        "description": "Cancel a Payment Link (using a specific `payment_link_id`). This sets the Payment Link `status` to `CANCELLED` and Finverse will no longer process any user inputs or payments for the Payment Link.\n\nCancellation is optional."
+      },
+      "parameters": [
+        {
+          "name": "payment_link_id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "{{payment_link_id}}"
+        }
+      ]
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  }
+}
