@@ -30,7 +30,8 @@
     }
   },
   "logo": {
-    "light": "/favicon.png"
+    "light": "/favicon.png",
+    "dark": "/favicon.png"
   },
   "navbar": {
     "primary": {
