@@ -29,7 +29,10 @@
       ]
     }
   },
-  "logo": "/favicon.png",
+  "logo": {
+    "light": "/logo.png",
+    "dark": "/logo.png"
+  },
   "navbar": {
     "primary": {
       "type": "button",
