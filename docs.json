@@ -9,51 +9,44 @@
   },
   "favicon": "/images/favicon.ico",
   "navigation": {
-    "tabs": [
+    "groups": [
       {
-        "tab": "Finverse API - Docs",
-        "groups": [
+        "group": "Overview",
+        "pages": [
+          "introduction"
+        ]
+      },
+      {
+        "group": "Authentication",
+        "openapi": "api-reference/openapi.json",
+        "pages": [
+          "POST /auth/customer/token"
+        ]
+      },
+      {
+        "group": "Data",
+        "pages": [
+          "data-api"
+        ]
+      },
+      {
+        "group": "Payments",
+        "openapi": "api-reference/openapi.json",
+        "pages": [
+          "payment-api",
           {
-            "group": "Overview",
+            "group": "Payment Links",
             "pages": [
-              "introduction"
-            ]
-          },
-          {
-            "group": "Authentication",
-            "openapi": "api-reference/openapi.json",
-            "pages": [
-              "POST /auth/customer/token"
-            ]
-          },
-          {
-            "group": "Data",
-            "pages": [
-              "data-api"
-            ]
-          },
-          {
-            "group": "Payments",
-            "openapi": "api-reference/openapi.json",
-            "pages": [
-              "payment-api",
-              {
-                "group": "Payment Links",
-                "pages": [
-                  "create-new-payment-link",
-                  "POST /payment_links",
-                  "GET /payment_links/{payment_link_id}",
-                  "POST /payment_links/{payment_link_id}/cancel"
-                ]
-              }
+              "create-new-payment-link",
+              "POST /payment_links",
+              "create-new-payment-link-with-api-details",
+              "GET /payment_links/{payment_link_id}",
+              "POST /payment_links/{payment_link_id}/cancel"
             ]
           }
         ]
       }
-    ],
-    "global": {
-      "anchors": []
-    }
+    ]
   },
   "logo": {
     "light": "/images/logo.svg",
