@@ -1,5 +1,5 @@
 ---
-title: "Payment API"
+title: "Getting started"
 ---
 
 Finverse's Payments API allow you to:
@@ -119,41 +119,206 @@ sequenceDiagram
     end
 ```
 
-Link: [https://www.websequencediagrams.com/files/render?link=c0O6uKrvZ1iEQt0MsZ7VqQECkVFXv3qrHn9G26jCsMvmmeYNL3ZurLYeGYUrxS4F](https://www.websequencediagrams.com/files/render?link=c0O6uKrvZ1iEQt0MsZ7VqQECkVFXv3qrHn9G26jCsMvmmeYNL3ZurLYeGYUrxS4F)
-
-<Frame>
-  ![Payment Link](/images/payment-link.png)
-</Frame>
-
 #### **Payment Links: Setup mode**
 
 This flow is used to create an online link for a user to setup & store a Payment Method for future payments (using the Payment collection flow below).
 
-Link: [https://www.websequencediagrams.com/files/render?link=qAkzv0HFqt30P7Rrd7tFMRnxjPh46XJ3oBW5Qv4uydLDqlGNWuxNSDfRgVLV8PNL](https://www.websequencediagrams.com/files/render?link=qAkzv0HFqt30P7Rrd7tFMRnxjPh46XJ3oBW5Qv4uydLDqlGNWuxNSDfRgVLV8PNL)
+```mermaid placement="top-right"
+sequenceDiagram
+    title Finverse Payment Links - payment method setup flow
 
-<Frame>
-  ![Setup Mode](/images/setup-mode.png)
-</Frame>
+    box Merchant
+        actor User
+        participant MerchantUI as Merchant UI
+        participant MerchantBE as Merchant backend/ERP
+    end
+
+    box Finverse
+        participant FPUI as Finverse Payment UI
+        participant FAPI as Finverse API
+        participant Gateways as Payment Gateways
+    end
+
+    Note over User, MerchantBE: Payment method setup preflow (merchant-specific)
+
+    Note over MerchantBE, FAPI: API authentication - api.prod.finverse.net
+
+    MerchantBE->>FAPI: [1] POST /auth/customer/token (client_id, client_secret)
+    FAPI-->>MerchantBE: customer_token
+
+    Note over MerchantBE, FAPI: Payment Link creation - mode=setup (store/edit payment method, no payment)
+
+    MerchantBE->>FAPI: [2] POST /payment_links (external_user_id, unique_reference_id, metadata)
+    FAPI-->>MerchantBE: Payment Link (url, payment_link_id)
+
+    MerchantBE-->>MerchantUI: Show Setup Payment Method button with url
+
+    User->>FPUI: Open url - Setup Payment Method (Finverse Payment UI)
+
+    Note over FPUI, Gateways: User selects payment method and completes authorization (banks/cards). Some methods can take up to 48h to confirm.
+
+    FPUI-->>MerchantBE: HTTP 302 redirect to merchant redirect_url (ui_mode=redirect)
+
+    Note over MerchantBE, FAPI: Async handling - webhooks + GET for Payment Link status
+
+    FAPI-->>MerchantBE: [3a] Payment Link webhooks
+
+    MerchantBE->>FAPI: [3b] GET /payment_links/payment_link_id (fallback + payment method details)
+    FAPI-->>MerchantBE: Payment Link (session_status, payment_method)
+
+    Note right of MerchantBE: Record Payment Method for future payments
+
+    Note over MerchantUI, MerchantBE: Show setup result from session_status
+
+    alt session_status OPEN
+        MerchantBE-->>MerchantUI: Show Setup Payment Method with url
+    else session_status COMPLETE
+        MerchantBE-->>MerchantUI: Show payment method setup success
+    else session_status FAILED
+        MerchantBE-->>MerchantUI: Show setup failure + retry url
+    else session_status PROCESSING
+        MerchantBE-->>MerchantUI: Show setup processing - notify later
+    end
+
+    Note over User, MerchantBE: Async notifications
+
+    alt session_status COMPLETE
+        MerchantBE-->>User: Notify payment method setup success
+    else session_status FAILED
+        MerchantBE-->>User: Notify setup failure + retry url
+    end
+```
 
 #### **Direct debit mandate setup flow (eGIRO/eDDA setup)**
 
 This flow is used to allow users to setup a direct debit authorization mandate (i.e. eGIRO/eDDA setup), which can then be used to collect future payments (using the Payment collection flow below).
 
-Link: [https://www.websequencediagrams.com/files/render?link=zXIsAsJ7toRuonMp1UDqinpmXFUKrqUqCa1TvNK26hCY0oE3fMiOCS4NwTqUB9GL](https://www.websequencediagrams.com/files/render?link=zXIsAsJ7toRuonMp1UDqinpmXFUKrqUqCa1TvNK26hCY0oE3fMiOCS4NwTqUB9GL)
+```mermaid placement="top-right"
+sequenceDiagram
+    title Finverse direct debits - mandate setup flow
 
-<Frame>
-  ![Egiro](/images/egiro.png)
-</Frame>
+    box Merchant
+        actor User
+        participant MerchantUI as Merchant UI
+        participant MerchantBE as Merchant backend/ERP
+    end
+
+    box Finverse
+        participant FMUI as Finverse Mandate Setup UI
+        participant FAPI as Finverse API
+        participant BankAPI as Bank direct debit APIs
+    end
+
+    Note over User, MerchantBE: Mandate setup preflow (merchant-specific)
+
+    Note over MerchantBE, FAPI: API authentication - api.prod.finverse.net
+
+    MerchantBE->>FAPI: [1] POST /auth/customer/token (client_id, client_secret)
+    FAPI-->>MerchantBE: customer_token
+
+    Note over MerchantBE, FAPI: Mandate creation
+
+    MerchantBE->>FAPI: [2] POST /mandates (external_user_id, user_type, recipient_account_id, metadata)
+    FAPI-->>MerchantBE: Mandate object (mandate_id, payment_method_id, status AUTHORIZATION_REQUIRED)
+
+    MerchantBE->>FAPI: [3] POST /mandates/link (mandate_id, link_customizations)
+    FAPI-->>MerchantBE: Mandate Link URL (link_url, 1hr expiry)
+
+    MerchantBE-->>MerchantUI: Show Setup Mandate button with url
+
+    User->>FMUI: Open url - Setup Mandate (Finverse Mandate Setup UI)
+
+    Note over FMUI, BankAPI: User selects bank and completes authorization - SG redirects to bank, HK in Finverse UI - up to 48h for some business accounts
+
+    FMUI-->>MerchantBE: HTTP 302 redirect to merchant redirect_url (ui_mode=redirect)
+
+    Note over MerchantBE, FAPI: Async handling - webhooks + GET for Mandate status
+
+    FAPI-->>MerchantBE: [4a] Mandate webhooks
+
+    MerchantBE->>FAPI: [4b] GET /mandates/mandate_id (fallback if webhooks not received)
+    FAPI-->>MerchantBE: Mandate object (mandate_id, payment_method_id, status SUCCEEDED or FAILED)
+
+    Note right of MerchantBE: Record Mandate for future payments
+
+    Note over MerchantUI, MerchantBE: Show Mandate setup result from status
+
+    alt status AUTHORIZATION_REQUIRED
+        MerchantBE-->>MerchantUI: Show Setup Mandate button with url
+    else status SUCCEEDED
+        MerchantBE-->>MerchantUI: Show mandate success
+    else status FAILED
+        MerchantBE-->>MerchantUI: Show mandate failed + retry url
+    else status PROCESSING or SUBMITTED
+        MerchantBE-->>MerchantUI: Show mandate processing - notify later
+    end
+
+    Note over User, MerchantBE: Async notifications
+
+    alt status SUCCEEDED
+        MerchantBE-->>User: Notify mandate setup success
+    else status FAILED
+        MerchantBE-->>User: Notify mandate setup failure + retry url
+    else status PROCESSING after 2hrs
+        MerchantBE-->>User: Mandate still processing - 2nd approver may need to approve via internet banking (business accounts)
+    end
+```
 
 #### **Payment collection flow (using a stored Payment Method)**
 
 This flow is used by merchants to initiate a Payment collection using a user's stored Payment Method (any stored payment method including card or direct debit mandate).
 
-Link: [https://www.websequencediagrams.com/files/render?link=AqlmKXs8id6FBdOql9U5pzLdBfI76YBBgLWI5HGO4w3jn5Tz7WbEJ4ylMMiU7Wjq](https://www.websequencediagrams.com/files/render?link=AqlmKXs8id6FBdOql9U5pzLdBfI76YBBgLWI5HGO4w3jn5Tz7WbEJ4ylMMiU7Wjq)
+```mermaid placement="top-right"
+sequenceDiagram
+    title Finverse Payments - merchant-initiated payment flow
 
-<Frame>
-  ![Collection](/images/collection.png)
-</Frame>
+    box Merchant
+        actor User
+        participant MerchantBE as Merchant backend/ERP
+    end
+
+    box Finverse
+        participant FAPI as Finverse API
+        participant Gateways as Payment Gateways
+    end
+
+    Note over MerchantBE: Pre-req - Payment Method setup completed (see Payment Links flow)
+
+    Note right of MerchantBE: Record Payment Method for future payments
+
+    Note over User, MerchantBE: Pre-req - User billing and invoice notifications if needed (merchant-specific)
+
+    Note over MerchantBE: Pre-req - Payment initiation logic - check invoice status and due dates, valid payment method, initiate on due date, retry failed payments (can be handled by Finverse via ERP integration)
+
+    Note over MerchantBE, FAPI: API authentication - api.prod.finverse.net
+
+    MerchantBE->>FAPI: [1] POST /auth/customer/token (client_id, client_secret)
+    FAPI-->>MerchantBE: customer_token
+
+    Note over MerchantBE, FAPI: Payment initiation
+
+    MerchantBE->>FAPI: [2] POST /payments (amount, payment_method_id)
+    FAPI-->>MerchantBE: Payment (status PROCESSING, payment_id)
+
+    Note over FAPI, Gateways: Finverse payment processing - near real-time, usually under 5s
+
+    Note over MerchantBE, FAPI: Payment status check - webhooks + GET to resolve result
+
+    FAPI-->>MerchantBE: [3a] Payment webhooks
+
+    MerchantBE->>FAPI: [3b] GET /payments/payment_id (fallback if webhooks not received)
+    FAPI-->>MerchantBE: Payment (status)
+
+    Note right of MerchantBE: Record Payment
+
+    Note over User, MerchantBE: User payment notifications based on Payment status (can be handled by Finverse)
+
+    alt status EXECUTED
+        MerchantBE-->>User: Notify payment success
+    else status FAILED
+        MerchantBE-->>User: Notify payment failure + Payment Link url to retry or change payment method
+    end
+```
 
 # **Implementation notes**
 

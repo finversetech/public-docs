@@ -8,11 +8,70 @@ After Finverse API authentication, follow these steps to link and retrieve data 
 
 ## **Sequence diagrams: Data API**
 
-Link: [https://www.websequencediagrams.com/files/render?link=vOvPIukX6bGrdSm4PJ1fUVOQQB6d02YxR8Qnzn8zTa0FQPpSDZA2Er73AQRGy6qZ](https://www.websequencediagrams.com/files/render?link=vOvPIukX6bGrdSm4PJ1fUVOQQB6d02YxR8Qnzn8zTa0FQPpSDZA2Er73AQRGy6qZ)
+```mermaid placement="top-right"
+%%{init: {'flowchart': {'defaultRenderer': 'elk'}}}%%
+sequenceDiagram
+    title Finverse Data API - Finverse Link bank connection flow
 
-<Frame>
-  ![Render](/images/render.png)
-</Frame>
+    box Customer
+        participant CustomerUI as Customer UI
+        participant CustomerBE as Customer backend
+    end
+
+    box Finverse
+        participant LinkUI as Finverse Link UI
+        participant FAPI as Finverse API
+    end
+
+    Note over CustomerBE, FAPI: API authentication - api.prod.finverse.net
+
+    CustomerBE->>FAPI: POST /auth/customer/token (client_id, client_secret)
+    FAPI-->>CustomerBE: customer_token
+
+    Note over CustomerUI, FAPI: Bank authentication flow - institution linking via Finverse Link UI
+
+    CustomerBE->>FAPI: POST /link/token (customer_token, client_id, redirect_uri, state, user_id)
+    FAPI-->>CustomerBE: link_url
+
+    CustomerBE-->>CustomerUI: Pass link_url to client
+
+    CustomerUI->>LinkUI: Open link_url
+
+    Note over LinkUI: User selects institution and authenticates with bank. Callback returns code or error plus institution_id, login_identity_id, state
+
+    LinkUI-->>CustomerUI: Browser callback to customer redirect URI
+
+    Note over CustomerUI, LinkUI: Callback handling depends on ui_mode - iframe, redirect, auto_redirect, standalone
+
+    CustomerUI->>CustomerBE: GET /redirect_uri
+
+    Note over CustomerBE, FAPI: Optional authentication webhooks for API-based or mobile-native flows without browser callback
+
+    FAPI-->>CustomerBE: Authentication events / webhooks
+
+    Note over CustomerBE: Customer handles post-redirect UI navigation and backend steps
+
+    CustomerBE->>FAPI: POST /auth/token (customer_token, client_id, code, redirect_uri)
+    FAPI-->>CustomerBE: login_identity_id, access_token, refresh_token
+
+    Note over CustomerBE, FAPI: Data retrieval flow - check login identity status and retrieve data
+
+    Note over CustomerBE, FAPI: Optional data retrieval webhooks - recommended at scale instead of polling
+
+    FAPI-->>CustomerBE: Data retrieval webhooks
+
+    Note over CustomerBE, FAPI: Check login identity status - GET /login_identity when to fetch data
+
+    opt Optional polling
+        CustomerBE->>FAPI: GET /login_identity (Login Identity Token)
+        FAPI-->>CustomerBE: Login identity object (product_status, session_status, status)
+    end
+
+    Note over CustomerBE, FAPI: Retrieve data for desired products - accounts, account_numbers, transactions, statements
+
+    CustomerBE->>FAPI: GET /product (Login Identity Token)
+    FAPI-->>CustomerBE: Product object
+```
 
 ## **A. Institution linking**
 

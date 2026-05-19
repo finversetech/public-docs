@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/docs.json",
-  "theme": "palm",
+  "theme": "aspen",
   "name": "Finverse Documentations",
   "colors": {
     "primary": "#009FFF",
@@ -12,29 +12,35 @@
     "tabs": [
       {
         "tab": "Finverse API - Docs",
-        "pages": [
-          "introduction",
-          "payment-api",
-          "data-api"
-        ]
-      },
-      {
-        "tab": "API reference",
         "groups": [
           {
-            "group": "API documentation",
-            "openapi": "api-reference/openapi.json"
+            "group": "Overview",
+            "pages": [
+              "introduction",
+              "data-api"
+            ]
           },
           {
-            "group": "Endpoint examples",
-            "pages": []
+            "group": "Authentication",
+            "openapi": "api-reference/openapi.json",
+            "pages": [
+              "POST /auth/customer/token"
+            ]
+          },
+          {
+            "group": "Payments",
+            "openapi": "api-reference/openapi.json",
+            "pages": [
+              "payment-api",
+              "POST /payment_links",
+              "GET /payment_links/{payment_link_id}"
+            ]
           }
         ]
       }
     ],
     "global": {
-      "anchors": [
-      ]
+      "anchors": []
     }
   },
   "logo": {
@@ -42,6 +48,11 @@
     "dark": "/images/logo.svg"
   },
   "navbar": {
+    "secondary": {
+      "type": "button",
+      "label": "Support",
+      "href": "https://support.finverse.com"
+    },
     "primary": {
       "type": "button",
       "label": "Dashboard",
@@ -50,22 +61,19 @@
   },
   "contextual": {
     "options": [
-     "copy",
-     "view",
-     "chatgpt",
-     "claude",
-     "perplexity",
-     "mcp",
-     "cursor",
-     "vscode"
-   ]
+      "copy",
+      "view",
+      "chatgpt",
+      "claude",
+      "perplexity",
+      "mcp",
+      "cursor",
+      "vscode"
+    ]
   },
   "footer": {
     "socials": {
       "github": "https://github.com/finversetech"
     }
-  },
-  "banner": {
-    "content": "Finverse API documentation"
   }
 }
