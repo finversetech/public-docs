@@ -53,73 +53,68 @@ Amount to be paid in currency's smallest unit. For example, HKD 100.01 is repres
 
 This flow is used to collect a one-time Payment from a user using an online link, with additional options to store the user's Payment Method and setup future autopayments.
 
-```mermaid
+```mermaid placement="top-right"
 sequenceDiagram
-    title Finverse Payment Links — online payments flow<br/>(user-initiated payment on payments page or invoice)
+    title Finverse Payment Links - online payments flow
 
-    box rgb(247,247,247) Merchant
+    box Merchant
         actor User
         participant MerchantUI as Merchant UI
         participant MerchantBE as Merchant backend/ERP
     end
 
-    box rgb(235,245,255) Finverse
+    box Finverse
         participant FPUI as Finverse Payment UI
         participant FAPI as Finverse API
-        participant Gateways as Payment Gateways<br/>(banks/cards)
+        participant Gateways as Payment Gateways
     end
 
-    Note over User, MerchantBE: Payment/invoice preflow<br/>(merchant-specific)
+    Note over User, MerchantBE: Payment/invoice preflow (merchant-specific)
 
-    Note over MerchantBE, FAPI: API authentication (api.prod.finverse.net)
+    Note over MerchantBE, FAPI: API authentication - api.prod.finverse.net
 
-    MerchantBE->>FAPI: [1] POST /auth/customer/token<br/>(client_id, client_secret)
+    MerchantBE->>FAPI: [1] POST /auth/customer/token (client_id, client_secret)
     FAPI-->>MerchantBE: customer_token
 
-    Note over MerchantBE, FAPI: Payment Link creation<br/>(mode = payment — runs payment + saves payment method if reusable)
+    Note over MerchantBE, FAPI: Payment Link creation - mode=payment
 
-    MerchantBE->>FAPI: [2] POST /payment_links<br/>(amount, external_user_id, unique_reference_id, metadata)
+    MerchantBE->>FAPI: [2] POST /payment_links (amount, external_user_id, unique_reference_id, metadata)
     FAPI-->>MerchantBE: Payment Link (url, payment_link_id)
 
-    MerchantBE-->>MerchantUI: Show "Pay Now" button with url
+    MerchantBE-->>MerchantUI: Show Pay Now button with url
 
-    User->>FPUI: Open url — "Pay Now" (Finverse Payment UI)
+    User->>FPUI: Open url - Pay Now (Finverse Payment UI)
 
-    Note over FPUI, Gateways: Finverse payment processing:<br/>user picks method & pays<br/>(async — some methods can take up to 48h to confirm)
+    Note over FPUI, Gateways: User selects payment method and pays (banks/cards). Some methods can take up to 48h to confirm.
 
-    FPUI--)MerchantBE: HTTP 302 redirect to merchant redirect_url<br/>(when ui_mode = redirect)
+    FPUI-->>MerchantBE: HTTP 302 redirect to merchant redirect_url (ui_mode=redirect)
 
-    Note over MerchantBE, FAPI: Async handling — Payment Link status<br/>(webhooks + GET; show result when async)
+    Note over MerchantBE, FAPI: Async handling - webhooks + GET for Payment Link status
 
-    FAPI--)MerchantBE: [3a] Payment Link & Payment webhooks
+    FAPI-->>MerchantBE: [3a] Payment Link and Payment webhooks
 
-    MerchantBE->>FAPI: [3b] GET /payment_links/{payment_link_id}<br/>(fallback + payment & payment-method details)
+    MerchantBE->>FAPI: [3b] GET /payment_links/payment_link_id (fallback + details)
+    FAPI-->>MerchantBE: Payment Link (session_status, payment, payment_method)
 
-    FAPI-->>MerchantBE: Payment Link<br/>(session_status, payment, payment_method)
-
-    activate MerchantBE
-    Note right of MerchantBE: record Payment;<br/>record Payment Method for future pays
-    deactivate MerchantBE
+    Note right of MerchantBE: Record Payment and Payment Method for future payments
 
     Note over MerchantUI, MerchantBE: Show outcome from session_status
 
-    alt Incomplete — session OPEN
-        MerchantBE-->>MerchantUI: Show "Pay Now" with url
-    else Paid — COMPLETE
+    alt session_status OPEN
+        MerchantBE-->>MerchantUI: Show Pay Now with url
+    else session_status COMPLETE
         MerchantBE-->>MerchantUI: Show payment success
-    else Failed — FAILED
+    else session_status FAILED
         MerchantBE-->>MerchantUI: Show failure + retry url
-    else Processing — PROCESSING
-        MerchantBE-->>MerchantUI: Show processing; notify later
+    else session_status PROCESSING
+        MerchantBE-->>MerchantUI: Show processing - notify later
     end
-
-    Note over MerchantBE, FAPI: Async handling: same pattern as above
 
     Note over User, MerchantBE: Async notifications
 
-    alt Paid — COMPLETE
+    alt session_status COMPLETE
         MerchantBE-->>User: Notify payment success
-    else Failed — FAILED
+    else session_status FAILED
         MerchantBE-->>User: Notify failure + retry url
     end
 ```
