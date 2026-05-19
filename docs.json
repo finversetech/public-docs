@@ -32,8 +32,14 @@
             "openapi": "api-reference/openapi.json",
             "pages": [
               "payment-api",
-              "POST /payment_links",
-              "GET /payment_links/{payment_link_id}"
+              {
+                "group": "Payment Links",
+                "pages": [
+                  "POST /create-new-payment-link",
+                  "POST /payment_links",
+                  "GET /payment_links/{payment_link_id}"
+                ]
+              }
             ]
           }
         ]
