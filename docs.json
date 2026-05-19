@@ -42,7 +42,8 @@
                 "pages": [
                   "create-new-payment-link",
                   "POST /payment_links",
-                  "GET /payment_links/{payment_link_id}"
+                  "GET /payment_links/{payment_link_id}",
+                  "POST /payment_links/{payment_link_id}/cancel"
                 ]
               }
             ]
