@@ -16,8 +16,7 @@
           {
             "group": "Overview",
             "pages": [
-              "introduction",
-              "data-api"
+              "introduction"
             ]
           },
           {
@@ -28,6 +27,12 @@
             ]
           },
           {
+            "group": "Data",
+            "pages": [
+              "data-api"
+            ]
+          },
+          {
             "group": "Payments",
             "openapi": "api-reference/openapi.json",
             "pages": [
@@ -35,7 +40,7 @@
               {
                 "group": "Payment Links",
                 "pages": [
-                  "POST /create-new-payment-link",
+                  "create-new-payment-link",
                   "POST /payment_links",
                   "GET /payment_links/{payment_link_id}"
                 ]
