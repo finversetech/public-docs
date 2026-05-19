@@ -14,6 +14,7 @@
         "tab": "Finverse API - Docs",
         "pages": [
           "introduction",
+          "payment-api",
           "data-api"
         ]
       },
