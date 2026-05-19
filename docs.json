@@ -11,9 +11,10 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Introduction",
+        "tab": "Finverse API - Docs",
         "pages": [
-          "introduction"
+          "introduction",
+          "data-api"
         ]
       },
       {
