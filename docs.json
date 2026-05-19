@@ -84,7 +84,8 @@
   },
   "footer": {
     "socials": {
-      "github": "https://github.com/finversetech"
+      "github": "https://github.com/finversetech",
+      "linkedin": "https://www.linkedin.com/company/finverse"
     }
   }
 }
