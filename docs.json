@@ -42,7 +42,8 @@
               "create-new-payment-link-with-api-details",
               "GET /payment_links/{payment_link_id}",
               "POST /payment_links/{payment_link_id}/cancel",
-              "POST /payment_links/new-end-point"
+              "POST /payment_links/new-end-point",
+              "POST /payment_links/another-endpoint"
             ]
           }
         ]

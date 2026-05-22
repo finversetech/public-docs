@@ -1767,6 +1767,57 @@
         },
         "description": "This is a new endpoint added for testing."
       }
+    },
+    "/payment_links/another-endpoint": {
+      "post": {
+        "summary": "Another Endpoint",
+        "responses": {
+          "200": {
+            "description": "Another Endpoint",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "body": {
+                      "type": "string"
+                    },
+                    "good": {
+                      "type": "boolean"
+                    }
+                  }
+                },
+                "example": {
+                  "body": "some value",
+                  "good": true
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          "Payment API",
+          "Payment Links"
+        ],
+        "description": "**This is an endpoint to do something**",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "data": {
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "example": {
+                "data": "some value"
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
