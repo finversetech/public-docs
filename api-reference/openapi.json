@@ -12489,6 +12489,65 @@
           }
         },
         "summary": "List Payouts"
+      },
+      "post": {
+        "security": [
+          {
+            "Oauth2": [
+              "payout:create"
+            ]
+          }
+        ],
+        "description": "Create a payout",
+        "tags": [
+          "payment"
+        ],
+        "operationId": "createPayout",
+        "parameters": [
+          {
+            "description": "A random key provided by the customer, per unique payout. The purpose for the Idempotency key is to allow safe retrying without the operation being performed multiple times.",
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePayoutRequest"
+              }
+            }
+          },
+          "description": "Request body containing information to create a payout",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutSnapshotResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrBodyModelV2"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a payout"
       }
     },
     "/payouts/{payoutId}": {
@@ -13661,6 +13720,56 @@
         ],
         "description": "Configure a test direct debit mandate to return status = `FAILED` with a set delay, after being submitted to the bank for authorization.\n\n**Authorization**: none\n\n### Testing use-case\n\n**Flow: Direct debit Mandate authorization**\n\n- Hong Kong eDDA only\n    \n\n_Note: only tests Mandate authorization/setup, not payments using the Mandate._\n\n**Availability**: any mandate created where the sender account is a \"Testbank\"\n\n**Scenario: Delayed Mandate authorization error**\n\n- Test case: after Finverse submits the Mandate authorization request to the bank, bank rejects the Mandate setup request after a (configurable) delay. This is helpful to test async unhappy paths.\n    \n- Result: mandate `status` = FAILED (async, after configurable delay)\n    \n\n### Request URL parameters\n\n### Response\n\n**Success**: `HTTP 200` with empty body",
         "summary": "Trigger delayed error (during bank processing)"
+      }
+    },
+    "/payouts/{payoutId}/confirm": {
+      "post": {
+        "security": [
+          {
+            "Oauth2": [
+              "payout:confirm"
+            ]
+          }
+        ],
+        "description": "Confirm a payout that was created with confirm = false, submitting it for processing",
+        "tags": [
+          "payment"
+        ],
+        "operationId": "confirmPayout",
+        "parameters": [
+          {
+            "description": "payout id",
+            "name": "payoutId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ok",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PayoutSnapshotResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrBodyModelV2"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Confirm a payout that was created with confirm = false, submitting it for processing"
       }
     }
   },
@@ -15998,6 +16107,47 @@
           },
           "total_payouts": {
             "type": "integer"
+          }
+        }
+      },
+      "CreatePayoutRequest": {
+        "type": "object",
+        "required": [
+          "amount",
+          "currency",
+          "confirm",
+          "payment_details",
+          "sender_account",
+          "recipient_account"
+        ],
+        "properties": {
+          "amount": {
+            "description": "The payout amount, in the minor unit of the currency",
+            "type": "integer"
+          },
+          "confirm": {
+            "description": "If true, the payout is immediately submitted for processing. If false, the payout is created in CREATED status and must be confirmed via POST /payouts/{payoutId}/confirm before it is processed.",
+            "type": "boolean"
+          },
+          "currency": {
+            "description": "ISO 4217 currency code of the payout",
+            "type": "string"
+          },
+          "metadata": {
+            "description": "Up to 20 metadata key-value pairs",
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "payment_details": {
+            "$ref": "#/components/schemas/CreatePayoutDetails"
+          },
+          "recipient_account": {
+            "$ref": "#/components/schemas/PayoutAccountRef"
+          },
+          "sender_account": {
+            "$ref": "#/components/schemas/PayoutAccountRef"
           }
         }
       },
@@ -18450,6 +18600,35 @@
           }
         }
       },
+      "CreatePayoutDetails": {
+        "type": "object",
+        "required": [
+          "description",
+          "external_transaction_reference"
+        ],
+        "properties": {
+          "description": {
+            "description": "A description for the payout",
+            "type": "string"
+          },
+          "external_transaction_reference": {
+            "description": "Any reference ID provided by the customer for this payout",
+            "type": "string"
+          }
+        }
+      },
+      "PayoutAccountRef": {
+        "type": "object",
+        "required": [
+          "account_id"
+        ],
+        "properties": {
+          "account_id": {
+            "description": "The payment account id",
+            "type": "string"
+          }
+        }
+      },
       "PayoutSnapshotDetails": {
         "properties": {
           "description": {
@@ -20134,6 +20313,26 @@
           "status": {
             "description": "Status of the payment reported by processor (e.g. \"authorized\", \"captured\", \"failed\", etc.)",
             "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://finverse-dev.us.auth0.com/oauth/token",
+            "scopes": {
+              "account": "Account",
+              "balance": "Balance",
+              "credit": "Credit",
+              "institution": "Institution",
+              "investment": "Investment",
+              "link": "Link",
+              "test": "Test",
+              "transaction": "Transaction"
+            }
           }
         }
       }
