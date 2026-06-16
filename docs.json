@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "aspen",
-  "name": "Finverse Documentations",
+  "name": "Finverse API",
   "colors": {
     "primary": "#009FFF",
     "light": "#67CFFF",
@@ -11,42 +11,8 @@
   "navigation": {
     "groups": [
       {
-        "group": "Overview",
-        "pages": [
-          "introduction"
-        ]
-      },
-      {
-        "group": "Authentication",
-        "openapi": "api-reference/openapi.json",
-        "pages": [
-          "POST /auth/customer/token"
-        ]
-      },
-      {
-        "group": "Data",
-        "pages": [
-          "data-api"
-        ]
-      },
-      {
-        "group": "Payments",
-        "openapi": "api-reference/openapi.json",
-        "pages": [
-          "payment-api",
-          {
-            "group": "Payment Links",
-            "pages": [
-              "create-new-payment-link",
-              "POST /payment_links",
-              "create-new-payment-link-with-api-details",
-              "GET /payment_links/{payment_link_id}",
-              "POST /payment_links/{payment_link_id}/cancel",
-              "POST /payment_links/new-end-point",
-              "POST /payment_links/another-endpoint"
-            ]
-          }
-        ]
+        "group": "API Reference",
+        "openapi": "api-reference/openapi.json"
       }
     ]
   },
