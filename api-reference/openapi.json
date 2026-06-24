@@ -14,6 +14,161 @@
     "version": "0.0.1"
   },
   "paths": {
+    "/account_numbers/{accountId}": {
+      "get": {
+        "security": [
+          {
+            "Oauth2": [
+              "account_number"
+            ]
+          }
+        ],
+        "description": "Retrieve account number information for a specific account (using a specific `account_id`).\n\n**Authorization**: `login_identity_token`\n\n### account\n\nFull `account` object, containing account-level balances & metadata for the requested account. See `GET /accounts` for details\n\n### account_number\n\nFull `account_number` object, containing account number details for the requested account.\n\n### institution\n\nSummary Institutions object. See `GET /institutions` for details.\n\n### login_identity\n\nSummary Login Identity object. See `GET /login_identity` for details.\n\n### payment_details\n\nFull `payment_details` array, containing bank routing details for the requested account.",
+        "tags": [
+          "accounts"
+        ],
+        "operationId": "getAccountNumber",
+        "parameters": [
+          {
+            "description": "The account id",
+            "name": "accountId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAccountNumberResponse"
+                },
+                "examples": {
+                  "success": {
+                    "summary": "Success",
+                    "value": {
+                      "account": {
+                        "account_currency": "HKD",
+                        "account_id": "01FEFKRGCTNYMSTDZWM6WFZVZS",
+                        "account_name": "HKD Checking",
+                        "balance": {
+                          "currency": "HKD",
+                          "raw": "70013.12",
+                          "value": 70013.12
+                        },
+                        "created_at": "2021-09-01T02:42:12.000Z",
+                        "group_id": "01FEFKRGDB5NBPKRQA4CB7HJ30",
+                        "is_closed": false,
+                        "is_excluded": false,
+                        "is_parent": false,
+                        "statement_balance": {
+                          "currency": "HKD",
+                          "raw": "70013.12",
+                          "value": 70013.12
+                        },
+                        "updated_at": "2021-09-01T02:42:12.000Z"
+                      },
+                      "account_number": {
+                        "account_id": "01FEFKRGCTNYMSTDZWM6WFZVZS",
+                        "number": "405123456789",
+                        "raw": "405-123456-789"
+                      },
+                      "institution": {
+                        "countries": [
+                          "HKG"
+                        ],
+                        "institution_id": "hsbc-hk",
+                        "institution_name": "HSBC (HK) - Personal",
+                        "portal_name": "HSBC Personal Account"
+                      },
+                      "login_identity": {
+                        "login_identity_id": "01FEFKR1GSJCRDHEN0FZ3DG9GF",
+                        "status": "DATA_RETRIEVAL_COMPLETE"
+                      },
+                      "payment_details": [
+                        {
+                          "bank_address": "Head Office, 1 Queen's Road Central, Hong Kong",
+                          "bank_country": "Hong Kong",
+                          "bank_fullname": "The Hongkong and Shanghai Banking Corporation Limited",
+                          "bank_shortname": "HSBC (Hong Kong)",
+                          "bic": "HSBCHKHHHKH",
+                          "format": "SWIFT",
+                          "other_info": {}
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestModelV2"
+                },
+                "examples": {
+                  "numbers_not_found": {
+                    "summary": "Error (numbers not found)",
+                    "value": {
+                      "error": {
+                        "code": 40004,
+                        "error_code": "ACCOUNT_NUMBERS_UNAVAILABLE",
+                        "message": "No account numbers are associated with the requested account(s). We may not be able to retrieve account numbers for this account type, or there may have been an error retrieving account numbers for this account (please review product_status for details).",
+                        "request_id": "{account_id}",
+                        "type": "API_ERROR"
+                      }
+                    }
+                  },
+                  "product_not_supported": {
+                    "summary": "Error (product not supported)",
+                    "value": {
+                      "error": {
+                        "code": 40012,
+                        "details": "Account numbers are not supported for this bank",
+                        "error_code": "PRODUCT_NOT_SUPPORTED",
+                        "message": "Requested product is not yet supported for this institution. Please refer to Institutions list for details on products supported.",
+                        "request_id": "{unique_id}",
+                        "type": "API_ERROR"
+                      }
+                    }
+                  },
+                  "account_not_found": {
+                    "summary": "Error (Account not found)",
+                    "value": {
+                      "error": {
+                        "code": 40004,
+                        "error_code": "ACCOUNT_NOT_FOUND",
+                        "message": "account_id cannot be found. Resource does not exist, has been deleted, or is no longer accessible.",
+                        "request_id": "{unique_id}",
+                        "type": "API_ERROR"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BadRequestModelV2"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get account number"
+      }
+    },
     "/accounts": {
       "get": {
         "security": [
@@ -6891,7 +7046,7 @@
             ]
           }
         ],
-        "description": "Create new Payment Link.\n\nTo avoid duplicate payments, you must provide a `unique_reference_id` which uniquely identifies the bill/invoice being paid. This allows you to safely create/retry Payment Links multiple times using the same `unique_reference_id`, for example if a user restarts the payment flow on a different device. Finverse will only allow a single payment per `unique_reference_id`. See \"Implementation guidance\" section below for additional details on how to generate a `unique_reference_id`.\n\n**Authorization**: `customer_token`\n\n### integration_metadata (object, optional)\n\nUse the following optional parameters to pass custom values for Finverse-supported integrations (e.g. ERP/CRM/accounting integrations).\n\n### link_customizations (object, optional)\n\nYou can use the following optional parameters to customize the behaviour of Finverse Link's UI to fit your implementation requirements.\n\n### payment_details (object, conditionally required)\n\nDetails describing the Payment transaction.\n\nRequired if `mode` = `PAYMENT`.\n\n### payment_setup_options (object, conditionally required)\n\nAdditional parameters to configure payment methods and future payments.\n\nRequired if `mode` = `SETUP`.\n\n#### **Impact of** **`future_payments`** **on payment methods displayed**\n\nWhen enabling `future_payments`:\n\n- In `mode` = `SETUP`: the Finverse Link UI will only display payment methods which support recurring \"pull\" payments (e.g direct debit & cards).\n    \n- In `mode` = `PAYMENT`, the Finverse Link UI will continue to show all available payment methods, including one-time payment methods (in order to encourage payment completion).\n    \n    - The future payments setting will only apply if the user selects a payment method which supports recurring payments (e.g. direct debit or cards).\n        \n    - To enable future payments and display only recurring payment methods, use the (optional) `payment_method_types` filter to explicitly limit the payment methods displayed.\n        \n\n### autopay_enrollment_configurations **(object, optional)**\n\nConfigures the FInverse Link UI to enroll users into autopay (i.e. collects consent for future payments).\n\nThis controls whether the Finverse UI will prompt users to opt-in to autopay, when autopay is not already enforced (i.e. when `future_payments` \u2260 `AUTOPAY`).\n\nWhen a user consents to autopay, the payment user property `autopay_consent` is set to `true`, which allows:\n\n- User can be charged for payments (using `POST /payments`) without obtaining additional user consent for each charge;\n    \n- Finverse can automatically initiate charges on bill/invoice due dates (for customer apps where Finverse ingests bill/invoices via ERP integrations or API).\n    \n\nNote: `autopay_enrollment_configurations` cannot be set when `future_payments` = `AUTOPAY` (since this already enforces autopay for all users; no autopay enrollment screen is shown).\n\n### mandate_details (object, optional)\n\nOptional configurations for any direct debit mandate setup by the user.\n\n### receipient_account_filters (object, optional)\n\nOptional filter to narrow the list of accounts receiving money (also called \"settlement accounts\"). This is typically used for more complex payment scenarios, for example when a Customer App needs multiple settlement accounts:\n\n- For different business units, or\n    \n- With different collection fee rules (e.g. with or without transaction fee surcharges paid by senders)\n    \n\nIn these cases the Customer App can use `recipient_account_filters` to explicitly filter the receiving accounts matching its business requirements.\n\nNote: settlement accounts are configured by Finverse during initial onboarding of each Customer App. By default, Finverse creates 1 recipient account per payment method. Contact [support@finverse.com](mailto:support@finverse.com) if you have complex payment flows, use cases or business units which may benefit from setting up multiple settlement accounts.\n\n### sender (object, required)\n\nDetails on the sender of the payment.\n\nView More\n\n## Response fields\n\nThe response is a Payment Link object.\n\nRefer to Payment Link object data model in `GET /payments_links/{payment_link_id}`.\n\n## Implementation guidance\n\n#### **Handling retries/revisit and avoiding duplicate payments: using** **`unique_reference_id as idempotency key`**\n\n- To enable retries/revisit, Finverse allows creating payment links using a previously-used `unique_reference_id`, if all payment link details are identical (amount, etc). This returns the same payment link ID and URL as originally created. This allows using `unique_reference_id` similarly to an idempotency key.\n    \n- To avoid duplicate payments, Finverse will only allow 1 executed payment per `unique_reference_id`.\n    \n- When a user revisits a payment link, the Finverse Link UI will show end-users a \u201cPayment in progress\u201d screen if a payment is already pending for the same `unique_reference_id`.\n    \n    - Example: if a user revisits a payment link after previously using the payment link to setup a direct debit mandate => the user will see \"Payment in progress\" if the direct debit mandate is still being processed; a payment will automatically be executed when the direct debit mandate becomes successful.\n        \n- `unique_reference_id` generation: we recommend generating `unique_reference_id` based on a composite/hash of the key payment details. The composite/hash should include any payment link details that could change between 2 user sessions, for example:\n    \n    - Bill/invoice/purchase reference (`external_transaction_reference`)\n        \n    - Payment `amount`\n        \n    - Sender details (`sender.name`, `sender.email`)\n        \n    - Metadata (`metadata`, `payment_metadata`).\n        \n    - This ensures that a new `unique_reference_id` is generated if any payment link details are modified (for example if the amount is updated or if the user changes their name/email between 2 user sessions).\n        \n- If a payment link creation request is sent using an existing `unique_reference_id` but different payment link details, the following API error will be returned:\n    \n\n``` json\n// HTTP 400 Bad Request\n{\n    \"error\": {\n        \"details\": \"Trying to update existing paymentLink. Not supported.\",\n        \"error_code\": \"INVALID_PARAMETER\",\n        \"message\": \"The parameters provided are invalid. See details.\",\n        \"request_id\": \"1689652320\",\n        \"type\": \"API_ERROR\"\n    }\n}\n\n ```",
+        "description": "Create new Payment Link.\n\nTo avoid duplicate payments, you must provide a `unique_reference_id` which uniquely identifies the bill/invoice being paid. This allows you to safely create/retry Payment Links multiple times using the same `unique_reference_id`, for example if a user restarts the payment flow on a different device. Finverse will only allow a single payment per `unique_reference_id`. See \"Implementation guidance\" section below for additional details on how to generate a `unique_reference_id`.\n\n**Authorization**: `customer_token`\n\n### integration_metadata (object, optional)\n\nUse the following optional parameters to pass custom values for Finverse-supported integrations (e.g. ERP/CRM/accounting integrations).\n\n### link_customizations (object, optional)\n\nYou can use the following optional parameters to customize the behaviour of Finverse Link's UI to fit your implementation requirements.\n\n### payment_details (object, conditionally required)\n\nDetails describing the Payment transaction.\n\nRequired if `mode` = `PAYMENT`.\n\n### payment_setup_options (object, conditionally required)\n\nAdditional parameters to configure payment methods and future payments.\n\nRequired if `mode` = `SETUP`.\n\n#### **Impact of** **`future_payments`** **on payment methods displayed**\n\nWhen enabling `future_payments`:\n\n- In `mode` = `SETUP`: the Finverse Link UI will only display payment methods which support recurring \"pull\" payments (e.g direct debit & cards).\n    \n- In `mode` = `PAYMENT`, the Finverse Link UI will continue to show all available payment methods, including one-time payment methods (in order to encourage payment completion).\n    \n    - The future payments setting will only apply if the user selects a payment method which supports recurring payments (e.g. direct debit or cards).\n        \n    - To enable future payments and display only recurring payment methods, use the (optional) `payment_method_types` filter to explicitly limit the payment methods displayed.\n        \n\n### autopay_enrollment_configurations **(object, optional)**\n\nConfigures the FInverse Link UI to enroll users into autopay (i.e. collects consent for future payments).\n\nThis controls whether the Finverse UI will prompt users to opt-in to autopay, when autopay is not already enforced (i.e. when `future_payments` ≠ `AUTOPAY`).\n\nWhen a user consents to autopay, the payment user property `autopay_consent` is set to `true`, which allows:\n\n- User can be charged for payments (using `POST /payments`) without obtaining additional user consent for each charge;\n    \n- Finverse can automatically initiate charges on bill/invoice due dates (for customer apps where Finverse ingests bill/invoices via ERP integrations or API).\n    \n\nNote: `autopay_enrollment_configurations` cannot be set when `future_payments` = `AUTOPAY` (since this already enforces autopay for all users; no autopay enrollment screen is shown).\n\n### mandate_details (object, optional)\n\nOptional configurations for any direct debit mandate setup by the user.\n\n### receipient_account_filters (object, optional)\n\nOptional filter to narrow the list of accounts receiving money (also called \"settlement accounts\"). This is typically used for more complex payment scenarios, for example when a Customer App needs multiple settlement accounts:\n\n- For different business units, or\n    \n- With different collection fee rules (e.g. with or without transaction fee surcharges paid by senders)\n    \n\nIn these cases the Customer App can use `recipient_account_filters` to explicitly filter the receiving accounts matching its business requirements.\n\nNote: settlement accounts are configured by Finverse during initial onboarding of each Customer App. By default, Finverse creates 1 recipient account per payment method. Contact [support@finverse.com](mailto:support@finverse.com) if you have complex payment flows, use cases or business units which may benefit from setting up multiple settlement accounts.\n\n### sender (object, required)\n\nDetails on the sender of the payment.\n\nView More\n\n## Response fields\n\nThe response is a Payment Link object.\n\nRefer to Payment Link object data model in `GET /payments_links/{payment_link_id}`.\n\n## Implementation guidance\n\n#### **Handling retries/revisit and avoiding duplicate payments: using** **`unique_reference_id as idempotency key`**\n\n- To enable retries/revisit, Finverse allows creating payment links using a previously-used `unique_reference_id`, if all payment link details are identical (amount, etc). This returns the same payment link ID and URL as originally created. This allows using `unique_reference_id` similarly to an idempotency key.\n    \n- To avoid duplicate payments, Finverse will only allow 1 executed payment per `unique_reference_id`.\n    \n- When a user revisits a payment link, the Finverse Link UI will show end-users a “Payment in progress” screen if a payment is already pending for the same `unique_reference_id`.\n    \n    - Example: if a user revisits a payment link after previously using the payment link to setup a direct debit mandate => the user will see \"Payment in progress\" if the direct debit mandate is still being processed; a payment will automatically be executed when the direct debit mandate becomes successful.\n        \n- `unique_reference_id` generation: we recommend generating `unique_reference_id` based on a composite/hash of the key payment details. The composite/hash should include any payment link details that could change between 2 user sessions, for example:\n    \n    - Bill/invoice/purchase reference (`external_transaction_reference`)\n        \n    - Payment `amount`\n        \n    - Sender details (`sender.name`, `sender.email`)\n        \n    - Metadata (`metadata`, `payment_metadata`).\n        \n    - This ensures that a new `unique_reference_id` is generated if any payment link details are modified (for example if the amount is updated or if the user changes their name/email between 2 user sessions).\n        \n- If a payment link creation request is sent using an existing `unique_reference_id` but different payment link details, the following API error will be returned:\n    \n\n``` json\n// HTTP 400 Bad Request\n{\n    \"error\": {\n        \"details\": \"Trying to update existing paymentLink. Not supported.\",\n        \"error_code\": \"INVALID_PARAMETER\",\n        \"message\": \"The parameters provided are invalid. See details.\",\n        \"request_id\": \"1689652320\",\n        \"type\": \"API_ERROR\"\n    }\n}\n\n ```",
         "tags": [
           "payment_links"
         ],
@@ -12637,7 +12792,7 @@
             ]
           }
         ],
-        "description": "Retrieve an individual statement URL, based on the statement's id. By default, this request returns a redirect (HTTP 307 code) to a temporary statement URL (valid for 15min).\n\nAuthorization: `login_identity_token`\n\n## Optional parameters\n\n### Redirect mode for statement URL\n\nURL parameter:\u00a0`redirect`\n\n(e.g. GET /statements/{statement_id}?redirect=false)\n\nDescription: Toggles the behaviour for how statement URLs are returned.\n\nRecommended value:\u00a0omit. This results in the default behaviour (`redirect=true`).\n\nAccepted values:",
+        "description": "Retrieve an individual statement URL, based on the statement's id. By default, this request returns a redirect (HTTP 307 code) to a temporary statement URL (valid for 15min).\n\nAuthorization: `login_identity_token`\n\n## Optional parameters\n\n### Redirect mode for statement URL\n\nURL parameter: `redirect`\n\n(e.g. GET /statements/{statement_id}?redirect=false)\n\nDescription: Toggles the behaviour for how statement URLs are returned.\n\nRecommended value: omit. This results in the default behaviour (`redirect=true`).\n\nAccepted values:",
         "tags": [
           "statements"
         ],
@@ -12737,7 +12892,7 @@
             ]
           }
         ],
-        "description": "Update a test manual payment (e.g. FPS, PayNow) to status = `EXECUTED`, by simulating manually transferring the specified payment to the Finverse Testbank.\n\n**Authorization**: `customer_token`\n\n### Testing use-case\n\n**Flow: Manual payments**\n\n- Hong Kong: FPS\n    \n- Singapore: PayNow\n    \n\n**Availability**: any manual payment created by a non-live customer app.\n\n**Scenario: Manual payment success**\n\n- Test case: Finverse/bank confirms the manual payment was successfully received\n    \n- Result: payment `status` = `EXECUTED`\n    \n\n**Testing steps:**\n\n1. **Create Payment Link** using `POST /payment_links`. Note the `payment_link_id` (also available in the payment link `url`: e.g. [https://pay.prod.finverse.net/link/01HW1V8PX04GHM6Q8ZAR7DPRAT](https://pay.prod.finverse.net/link/01HW1V8PX04GHM6Q8ZAR7DPRAT))\n    \n2. **Open the Payment Link UI and select a manual payment method** (e.g. FPS/PayNow)\n    \n    1. Click \u201cI have paid\u201d in the Finverse payment UI (if shown)\n        \n    2. If you are requested to enter your \"Accountholder last name or company name\" to confirm the payment, enter a unique value (duplicate values within the same 15 minute window will prevent the Finverse Testbank from simulating that a unique mock payment has been received).\n        \n3. **Fetch the Payment Link** using `GET /payment_links/{payment_link_id}`. Note the `payment.payment_id` value in the Payment Link response. You can also retrieve the created Payment record through the Finverse Dashboard UI (dashboard.finverse.com > Payments).\n    \n4. **Mark the Payment Link as** **`EXECUTED`** using `POST /testing/payments/{payment_id}/status`.\n    \n\n### Response\n\n**Success**: `HTTP 200` with empty body",
+        "description": "Update a test manual payment (e.g. FPS, PayNow) to status = `EXECUTED`, by simulating manually transferring the specified payment to the Finverse Testbank.\n\n**Authorization**: `customer_token`\n\n### Testing use-case\n\n**Flow: Manual payments**\n\n- Hong Kong: FPS\n    \n- Singapore: PayNow\n    \n\n**Availability**: any manual payment created by a non-live customer app.\n\n**Scenario: Manual payment success**\n\n- Test case: Finverse/bank confirms the manual payment was successfully received\n    \n- Result: payment `status` = `EXECUTED`\n    \n\n**Testing steps:**\n\n1. **Create Payment Link** using `POST /payment_links`. Note the `payment_link_id` (also available in the payment link `url`: e.g. [https://pay.prod.finverse.net/link/01HW1V8PX04GHM6Q8ZAR7DPRAT](https://pay.prod.finverse.net/link/01HW1V8PX04GHM6Q8ZAR7DPRAT))\n    \n2. **Open the Payment Link UI and select a manual payment method** (e.g. FPS/PayNow)\n    \n    1. Click “I have paid” in the Finverse payment UI (if shown)\n        \n    2. If you are requested to enter your \"Accountholder last name or company name\" to confirm the payment, enter a unique value (duplicate values within the same 15 minute window will prevent the Finverse Testbank from simulating that a unique mock payment has been received).\n        \n3. **Fetch the Payment Link** using `GET /payment_links/{payment_link_id}`. Note the `payment.payment_id` value in the Payment Link response. You can also retrieve the created Payment record through the Finverse Dashboard UI (dashboard.finverse.com > Payments).\n    \n4. **Mark the Payment Link as** **`EXECUTED`** using `POST /testing/payments/{payment_id}/status`.\n    \n\n### Response\n\n**Success**: `HTTP 200` with empty body",
         "tags": [
           "payments"
         ],
@@ -13724,6 +13879,28 @@
   ],
   "components": {
     "schemas": {
+      "GetAccountNumberResponse": {
+        "properties": {
+          "account": {
+            "$ref": "#/components/schemas/Account"
+          },
+          "account_number": {
+            "$ref": "#/components/schemas/AccountNumber"
+          },
+          "institution": {
+            "$ref": "#/components/schemas/InstitutionShort"
+          },
+          "login_identity": {
+            "$ref": "#/components/schemas/LoginIdentityShort"
+          },
+          "payment_details": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PaymentDetails"
+            }
+          }
+        }
+      },
       "BadRequestModelV2": {
         "properties": {
           "error": {
@@ -15219,7 +15396,7 @@
             "example": "hsbc-hk"
           },
           "institution_name": {
-            "description": "Institution Name for the sender\u2019s institution.",
+            "description": "Institution Name for the sender’s institution.",
             "type": "string",
             "example": "HSBC"
           },
@@ -15320,7 +15497,7 @@
             "description": "Details on the sender of the payment"
           },
           "unique_reference_id": {
-            "description": "Customer-supplied string, uniquely identifying the payment to be collected. See \u201c_Handling retries and avoiding duplicate payments_\u201d below.",
+            "description": "Customer-supplied string, uniquely identifying the payment to be collected. See “_Handling retries and avoiding duplicate payments_” below.",
             "type": "string",
             "minLength": 1
           }
@@ -15416,7 +15593,7 @@
             ]
           },
           "unique_reference_id": {
-            "description": "Customer-supplied string, uniquely identifying the payment to be collected. See \u201c_Handling retries and avoiding duplicate payments_\u201d under `POST /payment_links`.",
+            "description": "Customer-supplied string, uniquely identifying the payment to be collected. See “_Handling retries and avoiding duplicate payments_” under `POST /payment_links`.",
             "type": "string",
             "minLength": 1
           },
@@ -17387,7 +17564,7 @@
             "description": "Bank account number details, including account number in plaintext"
           },
           "account_number_masked": {
-            "description": "Masked Account number of the sender\u2019s account",
+            "description": "Masked Account number of the sender’s account",
             "type": "string"
           },
           "account_type": {
@@ -17413,12 +17590,12 @@
             "type": "string"
           },
           "institution_id": {
-            "description": "Finverse Institution ID for the sender\u2019s institution.",
+            "description": "Finverse Institution ID for the sender’s institution.",
             "type": "string",
             "example": "hsbc-hk"
           },
           "institution_name": {
-            "description": "Institution Name for the sender\u2019s institution.",
+            "description": "Institution Name for the sender’s institution.",
             "type": "string",
             "example": "HSBC"
           },
